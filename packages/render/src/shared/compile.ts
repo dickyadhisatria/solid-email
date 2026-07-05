@@ -14,6 +14,7 @@ import {
   removeSolidResourceScripts,
   renderOutput,
   renderSyncOutput,
+  solidRenderOptions,
 } from './render';
 import {
   buildMarkerRegex,
@@ -137,7 +138,7 @@ export async function compile<
   options?: CompileOptions,
 ): Promise<CompiledTemplate<TSlots>> {
   const html = removeSolidResourceScripts(
-    await renderToStringAsync(normalizeRenderable(node)),
+    await renderToStringAsync(normalizeRenderable(node), solidRenderOptions),
   );
   return new CompiledTemplate<TSlots>(html, options);
 }
@@ -149,7 +150,7 @@ export function compileSync<
     throw new Error('compileSync does not support pretty output; use compile.');
   }
   const html = removeSolidResourceScripts(
-    renderToString(normalizeRenderable(node)),
+    renderToString(normalizeRenderable(node), solidRenderOptions),
   );
   return new CompiledTemplate<TSlots>(html, options);
 }

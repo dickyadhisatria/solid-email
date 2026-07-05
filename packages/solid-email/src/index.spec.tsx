@@ -1,24 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import * as client from './client';
+import * as browserRoot from './client';
 import {
-  Body as ClientBody,
-  Button as ClientButton,
-  CodeBlock as ClientCodeBlock,
-  CodeInline as ClientCodeInline,
-  Column as ClientColumn,
-  Container as ClientContainer,
-  Font as ClientFont,
-  Head as ClientHead,
-  Heading as ClientHeading,
-  Hr as ClientHr,
-  Html as ClientHtml,
-  Img as ClientImg,
-  Link as ClientLink,
-  Markdown as ClientMarkdown,
-  Preview as ClientPreview,
-  Row as ClientRow,
-  Section as ClientSection,
-  Text as ClientText,
+  Body as BrowserRootBody,
+  Button as BrowserRootButton,
+  CodeBlock as BrowserRootCodeBlock,
+  CodeInline as BrowserRootCodeInline,
+  Column as BrowserRootColumn,
+  Container as BrowserRootContainer,
+  Font as BrowserRootFont,
+  Head as BrowserRootHead,
+  Heading as BrowserRootHeading,
+  Hr as BrowserRootHr,
+  Html as BrowserRootHtml,
+  Img as BrowserRootImg,
+  Link as BrowserRootLink,
+  Markdown as BrowserRootMarkdown,
+  Preview as BrowserRootPreview,
+  Row as BrowserRootRow,
+  Section as BrowserRootSection,
+  Text as BrowserRootText,
 } from './client';
 import {
   Body,
@@ -70,25 +70,25 @@ const componentExports = {
   Text,
 };
 
-const clientComponentExports = {
-  Body: ClientBody,
-  Button: ClientButton,
-  CodeBlock: ClientCodeBlock,
-  CodeInline: ClientCodeInline,
-  Column: ClientColumn,
-  Container: ClientContainer,
-  Font: ClientFont,
-  Head: ClientHead,
-  Heading: ClientHeading,
-  Hr: ClientHr,
-  Html: ClientHtml,
-  Img: ClientImg,
-  Link: ClientLink,
-  Markdown: ClientMarkdown,
-  Preview: ClientPreview,
-  Row: ClientRow,
-  Section: ClientSection,
-  Text: ClientText,
+const browserRootComponentExports = {
+  Body: BrowserRootBody,
+  Button: BrowserRootButton,
+  CodeBlock: BrowserRootCodeBlock,
+  CodeInline: BrowserRootCodeInline,
+  Column: BrowserRootColumn,
+  Container: BrowserRootContainer,
+  Font: BrowserRootFont,
+  Head: BrowserRootHead,
+  Heading: BrowserRootHeading,
+  Hr: BrowserRootHr,
+  Html: BrowserRootHtml,
+  Img: BrowserRootImg,
+  Link: BrowserRootLink,
+  Markdown: BrowserRootMarkdown,
+  Preview: BrowserRootPreview,
+  Row: BrowserRootRow,
+  Section: BrowserRootSection,
+  Text: BrowserRootText,
 };
 
 describe('public entrypoint', () => {
@@ -141,14 +141,16 @@ describe('public entrypoint', () => {
   });
 });
 
-describe('client entrypoint', () => {
+describe('browser root entrypoint', () => {
   it('exports DOM-safe preview components without render utilities or Tailwind', () => {
-    for (const [name, component] of Object.entries(clientComponentExports)) {
+    for (const [name, component] of Object.entries(
+      browserRootComponentExports,
+    )) {
       expect(component, name).toBeTypeOf('function');
     }
 
-    expect('render' in client).toBe(false);
-    expect('compile' in client).toBe(false);
-    expect('Tailwind' in client).toBe(false);
+    expect('render' in browserRoot).toBe(false);
+    expect('compile' in browserRoot).toBe(false);
+    expect('Tailwind' in browserRoot).toBe(false);
   });
 });

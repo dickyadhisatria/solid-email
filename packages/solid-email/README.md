@@ -32,12 +32,13 @@ const html = await render(() => <WelcomeEmail />);
 
 ## Entrypoints
 
-Use `@akin01/solid-email` for SSR/email HTML string rendering. It exports
-`render`, `compile`, and the full email component set, including `Tailwind`.
-
-Use `@akin01/solid-email/client` only for DOM/CSR preview mounting. It exports
-DOM-safe preview components and intentionally excludes `render`, `compile`, and
+`@akin01/solid-email` is conditionally exported. Server, Workerd, and default
+imports expose `render`, `compile`, and the full email component set, including
 `Tailwind`.
+
+Browser-condition imports of the same package root resolve to the DOM/CSR
+preview build. That build exports DOM-safe preview components and intentionally
+excludes `render`, `compile`, and `Tailwind`.
 
 ## Components
 

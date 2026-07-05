@@ -95,3 +95,11 @@ declare module 'solid-js/web/dist/server.js' {
     ssr,
   } from 'solid-js/web';
 }
+
+declare module 'solid-js/dist/server.js' {
+  export { createResource, Suspense } from 'solid-js';
+}
+
+declare module 'css-tree/dist/csstree.esm' {
+  export * from 'css-tree';
+}

@@ -1,4 +1,10 @@
-import { type CssNode, clone, find, List, type Rule } from 'css-tree';
+import {
+  type CssNode,
+  clone,
+  find,
+  List,
+  type Rule,
+} from 'css-tree/dist/csstree.esm';
 import { isPartInlinable } from './is-part-inlinable';
 
 /**

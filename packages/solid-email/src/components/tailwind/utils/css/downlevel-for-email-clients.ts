@@ -25,7 +25,7 @@ import {
   type Rule,
   type StyleSheet,
   walk,
-} from 'css-tree';
+} from 'css-tree/dist/csstree.esm';
 
 /**
  * css-tree 3.x introduced new AST node types for query-related at-rules that

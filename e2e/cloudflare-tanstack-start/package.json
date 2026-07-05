@@ -1,0 +1,26 @@
+{
+  "name": "solid-email-cloudflare-tanstack-start-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@solid-email/html-to-text": "file:../.tmp/packs/solid-email-html-to-text-0.1.1.tgz",
+    "@solid-email/render": "file:../.tmp/packs/solid-email-render-0.1.4.tgz",
+    "@akin01/solid-email": "file:../.tmp/packs/akin01-solid-email-0.1.4.tgz",
+    "solid-js": "1.9.13"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.43.0",
+    "@tanstack/solid-router": "1.170.16",
+    "@tanstack/solid-start": "1.168.26",
+    "@types/node": "25.0.2",
+    "typescript": "6.0.3",
+    "vite": "7.3.1",
+    "vite-plugin-solid": "2.11.12",
+    "wrangler": "4.107.0"
+  }
+}

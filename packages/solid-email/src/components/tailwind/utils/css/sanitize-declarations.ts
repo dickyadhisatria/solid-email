@@ -8,7 +8,7 @@ import {
   type Raw,
   type Value,
   walk,
-} from 'css-tree';
+} from 'css-tree/dist/csstree.esm';
 
 function rgbNode(
   r: number,

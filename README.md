@@ -60,10 +60,12 @@ Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's 
 
 | Package entry | Raw size | Gzip size | Comparison |
 | --- | ---: | ---: | --- |
-| `@akin01/solid-email/dist/index.mjs` | 198.7 KiB | 42.3 KiB | Components entry |
-| `@solid-email/render/dist/node/index.mjs` | 13.3 KiB | 3.7 KiB | Renderer entry |
-| Solid Email combined entries | 211.9 KiB | 46.0 KiB | 6.8x smaller raw / 7.5x smaller gzip than React Email |
-| `react-email/dist/index.mjs` | 1,448.0 KiB | 347.4 KiB | React Email baseline |
+| `@akin01/solid-email/dist/index.mjs` | 199.0 KiB | 42.7 KiB | Server/root components and render utility re-exports |
+| `@akin01/solid-email/dist/client/index.mjs` | 105.9 KiB | 19.5 KiB | Browser-condition DOM preview build |
+| `@solid-email/render/dist/node/index.mjs` | 26.3 KiB | 6.2 KiB | Renderer entry |
+| Solid Email server entries | 225.3 KiB | 48.9 KiB | 6.4x smaller raw / 7.1x smaller gzip than React Email |
+| Solid Email all ESM condition entries | 331.2 KiB | 68.4 KiB | 4.4x smaller raw / 5.1x smaller gzip than React Email |
+| `react-email/dist/index.mjs` | 1,448.0 KiB | 348.6 KiB | React Email baseline |
 
 ## Install
 
@@ -112,13 +114,13 @@ const html = renderSync(() => <WelcomeEmail />);
 
 ## Entrypoints
 
-`@akin01/solid-email` is the SSR/email-rendering entrypoint. It keeps `render`,
-`compile`, and all email components available even under browser-like import
-conditions, so browser code can still produce email HTML strings.
-
-`@akin01/solid-email/client` is the opt-in DOM/CSR preview entrypoint. It exports
-DOM-safe preview components and intentionally excludes `render`, `compile`, and
+`@akin01/solid-email` is conditionally exported. Server, Workerd, and default
+imports expose `render`, `compile`, and the full email component set, including
 `Tailwind`.
+
+Browser-condition imports of the same package root resolve to the DOM/CSR
+preview build. That build exports DOM-safe preview components and intentionally
+excludes `render`, `compile`, and `Tailwind`.
 
 ## Compile for repeated renders
 

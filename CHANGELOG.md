@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Changed
+
+- Browser-condition imports from `@akin01/solid-email` now resolve to the
+  DOM/CSR preview build, replacing the public `@akin01/solid-email/client`
+  subpath while keeping server, Workerd, and default imports on the SSR/email
+  rendering build.
+- Browser-condition `require('@akin01/solid-email')` now resolves to the
+  DOM/CSR preview CJS build.
+- Default/root ESM and CJS server entries now share Solid's server runtime for
+  Tailwind resource rendering, preventing CJS `Tailwind` renders from splitting
+  Solid SSR context.
+- Tailwind's CSS Tree usage now imports the exported browser/dist ESM bundle to
+  avoid Node `createRequire`/`mdn-data` JSON loading in Workerd bundles.
+
+### Related commits
+
+- Workerd-safe root exports and rendering
+  - [`691ed9560834`](https://github.com/Akin01/solid-email/commit/691ed95608341c664c8d80335e001faea667cf9a) Added Workerd-safe root export conditions, server/runtime fixes, and Cloudflare TanStack Start coverage.
+  - [`9c6bb421f37b`](https://github.com/Akin01/solid-email/commit/9c6bb421f37b427bc9f05305a3bac63a886d4857) Added the TypeScript shim for CSS Tree's dist ESM entry used by Workerd-safe Tailwind imports.
+- Documentation and bundle metrics
+  - [`4a38f8e2af11`](https://github.com/Akin01/solid-email/commit/4a38f8e2af117d53a49535844c78e5a184719a40) Updated browser-root documentation, Solid Email skill guidance, and recomputed bundle-size comparisons.
+
+### Verified
+
+- `pnpm test`
+- `pnpm test:e2e`
+- `pnpm typecheck`
+- `pnpm build`
+- `pnpm lint`
+
 ## 0.1.4 - 2026-06-26
 
 ### Changed

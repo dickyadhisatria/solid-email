@@ -1,5 +1,11 @@
-import { type CssNode, generate, List, type StyleSheet } from 'css-tree';
-import { createResource, type JSX, Suspense } from 'solid-js';
+import {
+  type CssNode,
+  generate,
+  List,
+  type StyleSheet,
+} from 'css-tree/dist/csstree.esm';
+import type { JSX } from 'solid-js';
+import { createResource, Suspense } from 'solid-js/dist/server.js';
 import { ssr } from 'solid-js/web/dist/server.js';
 import type { Config } from 'tailwindcss';
 import type { SolidStyle } from '../shared';

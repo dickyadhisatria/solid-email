@@ -1,4 +1,4 @@
-import { type CssNode, walk } from 'css-tree';
+import { type CssNode, walk } from 'css-tree/dist/csstree.esm';
 
 /**
  * Intentionally only resolves `*` and `/` operations without dealing with parenthesis, because this is the only thing required to run Tailwind v4

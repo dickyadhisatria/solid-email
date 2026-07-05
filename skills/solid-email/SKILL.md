@@ -79,11 +79,13 @@ const html = renderSync(() => (
 
 ## DOM/CSR preview entrypoint
 
-Use `@akin01/solid-email/client` only when mounting email components into the browser DOM for previews. Pair it with Solid's DOM renderer from `solid-js/web`.
+Use the `@akin01/solid-email` package root when mounting email components into
+the browser DOM for previews. Browser-condition bundlers resolve the root to the
+DOM-safe Solid DOM build. Pair it with Solid's DOM renderer from `solid-js/web`.
 
 ```tsx
 import { render as mount } from 'solid-js/web';
-import { Body, Container, Heading, Html, Text } from '@akin01/solid-email/client';
+import { Body, Container, Heading, Html, Text } from '@akin01/solid-email';
 
 mount(
   () => (
@@ -100,7 +102,9 @@ mount(
 );
 ```
 
-Do not import `render`, `compile`, or `Tailwind` from the client subpath. Use the package root or `@solid-email/render` for server/email HTML string rendering.
+Browser-condition root imports intentionally omit `render`, `compile`, and
+`Tailwind`. Use default/server root imports or `@solid-email/render` for
+send-ready email HTML strings.
 
 ## Compile for repeated renders
 

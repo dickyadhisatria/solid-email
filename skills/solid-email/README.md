@@ -24,6 +24,8 @@ skills/
 - Using Tailwind utility inlining for email clients.
 - Writing email-client-safe markup and styles.
 - Integrating rendering in Node, Vite, TanStack Start, worker, and edge-style runtimes.
+- Previewing components in the browser through the `@akin01/solid-email`
+  browser-condition root, which resolves to the DOM-safe Solid DOM build.
 - Keeping template code type-safe.
 
 ## Usage

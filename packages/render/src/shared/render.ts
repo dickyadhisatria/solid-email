@@ -11,6 +11,7 @@ export type Renderable = JSX.Element | (() => JSX.Element);
 
 const doctype =
   '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+export const solidRenderOptions = { renderId: 'solid-email' } as const;
 
 export function normalizeRenderable(node: Renderable) {
   return typeof node === 'function' ? (node as () => JSX.Element) : () => node;
@@ -81,7 +82,7 @@ export async function render(
   options?: Options,
 ): Promise<string> {
   const html = removeSolidResourceScripts(
-    await renderToStringAsync(normalizeRenderable(node)),
+    await renderToStringAsync(normalizeRenderable(node), solidRenderOptions),
   );
 
   return renderOutput(html, options);
@@ -96,7 +97,7 @@ export function renderSync(
   }
 
   const html = removeSolidResourceScripts(
-    renderToString(normalizeRenderable(node)),
+    renderToString(normalizeRenderable(node), solidRenderOptions),
   );
 
   return renderSyncOutput(html, options);
