@@ -36,9 +36,9 @@ Measured with `pnpm benchmark:rendering` on the repository marketing email fixtu
 | Solid Email `render()` | Static JSX | 2.2919ms | 436.33 hz | 5.02x faster than React Email `render()` |
 | Solid Email `renderSync()` | Static JSX | 1.8935ms | 528.13 hz | 6.08x faster than React Email `render()` |
 | Solid Email `render()` | Tailwind JSX | 3.1230ms | 320.20 hz | 5.69x faster than React Email Tailwind |
-| Solid Email `compileSync` render (cached) | Static JSX | 0.0438ms | 22,842 hz | 263x faster than React Email `render()` |
+| Solid Email `compileSync` render (cached) | Static JSX | **0.0438ms** | **22,842 hz** | 263x faster than React Email `render()` |
 | Solid Email `compile` render (cached) | Static JSX | 0.0858ms | 11,661 hz | 134x faster than React Email `render()` |
-| Solid Email `compile` render (cached) | Tailwind JSX | 0.0452ms | 22,145 hz | 393x faster than React Email Tailwind |
+| Solid Email `compile` render (cached) | Tailwind JSX | 0.0452ms | 22,145 hz | **393x faster than React Email Tailwind** |
 | React Email `render()` | Static JSX | 11.5084ms | 86.89 hz | Baseline |
 | React Email `render()` | Tailwind JSX | 17.7760ms | 56.26 hz | Tailwind baseline |
 
@@ -49,12 +49,27 @@ Plain-text benchmarks measured with `pnpm benchmark:html-to-text` on the reposit
 | Operation | Fixture | Mean | Throughput | Comparison |
 | --- | --- | ---: | ---: | --- |
 | `@solid-email/render` `toPlainText` | HTML fixtures | 2.4369ms | 410.36 hz | 3.40x faster than React Email `toPlainText` |
-| `@solid-email/render` compiled text template | Solid JSX | 1.4434ms | 692.83 hz | 8.61x faster than React Email plain-text render |
+| `@solid-email/render` compiled text template | Solid JSX | **1.4434ms** | **692.83 hz** | **8.61x faster than React Email plain-text render** |
 | `@solid-email/render` uncompiled `renderSync` plain text | Solid JSX | 2.8895ms | 346.09 hz | 4.30x faster than React Email plain-text render |
 | `@solid-email/html-to-text` `convert` | HTML fixtures | 3.9657ms | 252.16 hz | Direct package converter |
 | `html-to-text` `convert` | HTML fixtures | 3.8166ms | 262.01 hz | Direct converter baseline |
 | React Email `toPlainText` | HTML fixtures | 8.2867ms | 120.67 hz | React text conversion baseline |
 | React Email `render` plain text | React JSX | 12.4310ms | 80.44 hz | React plain-text render baseline |
+
+Cross-library benchmarks measured with `pnpm benchmark:cross-library` on the
+marketing email template, using 50 iterations × 10 runs after 3 warmup runs.
+Lower average time is better.
+
+| Library / mode | Avg | Min | Max | Ops/s | Output | Heap Δ | Conformance | vs React Email |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Solid Email `renderSync` | 1.17ms | 764µs | 1.47ms | 853 | 22.6 KB | **<0.01 MB** | 100% | 1.5x faster |
+| Solid Email `compileSync` render (cached) | **12µs** | **9µs** | **15µs** | **83,483** | 23.4 KB | **<0.01 MB** | 100% | **148.4x faster** |
+| JSX Email `render` | 3.82ms | 3.25ms | 5.45ms | 262 | **18.2 KB** | 1.15 MB | 100% | 2.1x slower |
+| React Email `render` | 1.78ms | 1.37ms | 4.00ms | 563 | 22.5 KB | 26.36 MB | 100% | Baseline |
+| MJML React `render` | 11.01ms | 9.39ms | 14.74ms | 91 | 75.5 KB | 1.57 MB | 100% | 6.2x slower |
+
+All cross-library outputs reached 100% pairwise conformance against the shared
+email template checks.
 
 Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's `zlib.gzipSync`.
 
@@ -62,8 +77,8 @@ Bundle size compares built ESM entry files after `pnpm build`; gzip uses Node's 
 | --- | ---: | ---: | --- |
 | `@akin01/solid-email/dist/index.mjs` | 199.0 KiB | 42.7 KiB | Server/root components and render utility re-exports |
 | `@akin01/solid-email/dist/client/index.mjs` | 105.9 KiB | 19.5 KiB | Browser-condition DOM preview build |
-| `@solid-email/render/dist/node/index.mjs` | 26.3 KiB | 6.2 KiB | Renderer entry |
-| Solid Email server entries | 225.3 KiB | 48.9 KiB | 6.4x smaller raw / 7.1x smaller gzip than React Email |
+| `@solid-email/render/dist/node/index.mjs` | **26.3 KiB** | **6.2 KiB** | Renderer entry |
+| Solid Email server entries | 225.3 KiB | 48.9 KiB | **6.4x smaller raw / 7.1x smaller gzip than React Email** |
 | Solid Email all ESM condition entries | 331.2 KiB | 68.4 KiB | 4.4x smaller raw / 5.1x smaller gzip than React Email |
 | `react-email/dist/index.mjs` | 1,448.0 KiB | 348.6 KiB | React Email baseline |
 

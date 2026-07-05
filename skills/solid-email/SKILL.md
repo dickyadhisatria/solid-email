@@ -4,7 +4,7 @@ description: Use when building, reviewing, testing, or documenting HTML email te
 license: MIT
 metadata:
   author: Ainul Yaqin
-  version: "0.1.4"
+  version: "0.1.5"
   homepage: https://github.com/akin01/solid-email
   source: https://github.com/akin01/solid-email
 ---

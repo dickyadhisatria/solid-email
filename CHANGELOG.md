@@ -4,8 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.1.5 - 2026-07-05
+
+### Added
+
+- Added a cross-library email benchmark suite comparing Solid Email with React
+  Email, JSX Email, and MJML React across render latency, throughput, heap
+  usage, output size, and pairwise HTML conformance.
+- Added the `pnpm benchmark:cross-library` script for running the
+  cross-library benchmark suite from the workspace root.
+
 ### Changed
 
+- Bumped `@solid-email/render` and `@akin01/solid-email` to `0.1.5` so both
+  publishable packages can be released together with the benchmark and Workerd
+  compatibility updates.
+- Bumped the private monorepo metadata and Solid Email skill metadata to
+  `0.1.5`.
+- Updated e2e fixture tarball references to `0.1.5` so published-package
+  integration tests install the current release artifacts.
 - Browser-condition imports from `@akin01/solid-email` now resolve to the
   DOM/CSR preview build, replacing the public `@akin01/solid-email/client`
   subpath while keeping server, Workerd, and default imports on the SSR/email
@@ -20,6 +37,9 @@ All notable changes to this project will be documented in this file.
 
 ### Related commits
 
+- Cross-library benchmark suite
+  - [`03d9a87069f3`](https://github.com/Akin01/solid-email/commit/03d9a87069f37a15870428525aec9cd18614b580) Merged PR #14 for `feat/add-cross-library-benchmark`.
+  - [`47352df6af85`](https://github.com/Akin01/solid-email/commit/47352df6af851df8920ee7f7a73ba4e8d6b52396) Addressed cross-library benchmark review feedback.
 - Workerd-safe root exports and rendering
   - [`691ed9560834`](https://github.com/Akin01/solid-email/commit/691ed95608341c664c8d80335e001faea667cf9a) Added Workerd-safe root export conditions, server/runtime fixes, and Cloudflare TanStack Start coverage.
   - [`9c6bb421f37b`](https://github.com/Akin01/solid-email/commit/9c6bb421f37b427bc9f05305a3bac63a886d4857) Added the TypeScript shim for CSS Tree's dist ESM entry used by Workerd-safe Tailwind imports.
@@ -28,11 +48,12 @@ All notable changes to this project will be documented in this file.
 
 ### Verified
 
+- `pnpm exec biome check package.json packages/solid-email/package.json packages/render/package.json skills/solid-email/SKILL.md README.md CHANGELOG.md benchmarks/cross-library/tsconfig.json e2e/vite/package.json e2e/tanstack-start/package.json e2e/cloudflare-tanstack-start/package.json e2e/vite/pnpm-workspace.yaml e2e/tanstack-start/pnpm-workspace.yaml e2e/cloudflare-tanstack-start/pnpm-workspace.yaml`
 - `pnpm test`
 - `pnpm test:e2e`
-- `pnpm typecheck`
-- `pnpm build`
-- `pnpm lint`
+- `pnpm --filter @benchmarks/cross-library run typecheck`
+- `pnpm benchmark:cross-library`
+- `node scripts/create-github-releases.mjs --dry-run --package-version @solid-email/render@0.1.5 --package-version @akin01/solid-email@0.1.5`
 
 ## 0.1.4 - 2026-06-26
 
