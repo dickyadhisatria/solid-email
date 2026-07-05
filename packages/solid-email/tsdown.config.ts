@@ -1,5 +1,5 @@
 import { defineConfig, type UserConfig } from 'tsdown';
-import solid from 'vite-plugin-solid';
+import solid, { type Options as SolidPluginOptions } from 'vite-plugin-solid';
 
 const base: Pick<UserConfig, 'deps' | 'dts' | 'fixedExtension' | 'format'> = {
   dts: true,
@@ -15,6 +15,18 @@ const base: Pick<UserConfig, 'deps' | 'dts' | 'fixedExtension' | 'format'> = {
   fixedExtension: true,
 };
 
+type SolidCompilerOptions = NonNullable<SolidPluginOptions['solid']> & {
+  validate?: boolean;
+};
+
+const emailSolidCompilerOptions = {
+  // Solid's template validator assumes fragments will be parsed through
+  // innerHTML. Email components intentionally expose document-level
+  // <html>, <head>, and <body> roots, which browsers normalize when parsed
+  // as fragments even though Solid's SSR output is the desired final HTML.
+  validate: false,
+} satisfies SolidCompilerOptions;
+
 export default defineConfig([
   {
     ...base,
@@ -26,6 +38,7 @@ export default defineConfig([
     plugins: [
       solid({
         solid: {
+          ...emailSolidCompilerOptions,
           generate: 'ssr',
           hydratable: false,
           moduleName: 'solid-js/web/dist/server.js',
@@ -44,6 +57,7 @@ export default defineConfig([
     plugins: [
       solid({
         solid: {
+          ...emailSolidCompilerOptions,
           generate: 'dom',
           hydratable: false,
         },
