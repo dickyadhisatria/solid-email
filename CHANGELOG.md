@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 
 - Workerd-safe root exports and rendering
   - [`691ed9560834`](https://github.com/Akin01/solid-email/commit/691ed95608341c664c8d80335e001faea667cf9a) Added Workerd-safe root export conditions, server/runtime fixes, and Cloudflare TanStack Start coverage.
+  - [`9c6bb421f37b`](https://github.com/Akin01/solid-email/commit/9c6bb421f37b427bc9f05305a3bac63a886d4857) Added the TypeScript shim for CSS Tree's dist ESM entry used by Workerd-safe Tailwind imports.
 - Documentation and bundle metrics
   - [`4a38f8e2af11`](https://github.com/Akin01/solid-email/commit/4a38f8e2af117d53a49535844c78e5a184719a40) Updated browser-root documentation, Solid Email skill guidance, and recomputed bundle-size comparisons.
 
