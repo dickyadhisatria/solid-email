@@ -11,7 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
-import { compileSync, type Renderable, renderSync } from '@akin01/solid-email';
+import { compileSync, renderSync } from '@akin01/solid-email';
 import { marketingProps } from '../shared/fixture-data';
 import { takeSnapshot, toMB } from '../shared/memory';
 import { CompiledMarketingEmail } from './compiled-template';
@@ -121,7 +121,7 @@ function main() {
 
   // ---- 2. compileSync + cached render ----
   const beforeCompile = takeSnapshot();
-  const compiled = compileSync(() => CompiledMarketingEmail() as Renderable);
+  const compiled = compileSync(() => CompiledMarketingEmail());
   const afterCompile = takeSnapshot();
   const compileOverheadMB = toMB(
     afterCompile.heapUsed - beforeCompile.heapUsed,

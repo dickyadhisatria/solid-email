@@ -49,7 +49,12 @@ export function JsxMarketingEmail(
               {data.headline}
             </Heading>
             <Text style={styles.intro}>{data.intro}</Text>
-            <Button href={data.ctaHref} style={styles.button}>
+            <Button
+              height={44}
+              href={data.ctaHref}
+              style={styles.button}
+              width={220}
+            >
               View the launch notes
             </Button>
           </Section>

@@ -39,7 +39,7 @@ async function main() {
   // Solid Email — read from disk (written by solid bench)
   const solidHtml = readHtml('solid.html');
 
-  // Pairwise conformance: each library vs each other
+  // Compare each output against the solid-email target shown in the viewer.
   const pairs: [string, string][] = [
     ['solid', solidHtml],
     ['jsx-email', jsxHtml],
@@ -47,28 +47,11 @@ async function main() {
     ['mjml-react', mjmlHtml],
   ];
 
-  const outputs = pairs.map(([name, html]) => {
-    // Score is average against all other libraries
-    const others = pairs.filter(([n]) => n !== name);
-    const scores = others.map(
-      ([, otherHtml]) => checkConformance(otherHtml, html).score,
-    );
-    const avgScore = Math.round(
-      scores.reduce((a, b) => a + b, 0) / scores.length,
-    );
-    return {
-      name,
-      html,
-      conformance: {
-        match: avgScore === 100,
-        score: avgScore,
-        textMatch: true,
-        linksMatch: true,
-        imagesMatch: true,
-      },
-    };
-  });
-
+  const outputs = pairs.map(([name, html]) => ({
+    name,
+    html,
+    conformance: checkConformance(solidHtml, html),
+  }));
   const comparisonPath = saveSideBySide(solidHtml, outputs);
   console.log(`Visual comparison saved to ${comparisonPath}`);
 }

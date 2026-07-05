@@ -65,7 +65,7 @@ export function MjmlMarketingEmail(
                 lineHeight="40px"
                 color="#ffffff"
                 fontWeight="700"
-                margin="0 0 16px"
+                padding="0 0 16px"
               >
                 {data.headline}
               </MjmlText>
@@ -73,7 +73,7 @@ export function MjmlMarketingEmail(
                 fontSize="16px"
                 lineHeight="26px"
                 color="#d1d5db"
-                margin="0 0 24px"
+                padding="0 0 24px"
               >
                 {data.intro}
               </MjmlText>
@@ -91,7 +91,11 @@ export function MjmlMarketingEmail(
             </MjmlColumn>
           </MjmlSection>
 
-          <MjmlDivider borderColor="#e5e7eb" padding="28px 0" />
+          <MjmlSection padding="0">
+            <MjmlColumn>
+              <MjmlDivider borderColor="#e5e7eb" padding="28px 0" />
+            </MjmlColumn>
+          </MjmlSection>
 
           {/* Features */}
           <MjmlSection>
@@ -101,41 +105,41 @@ export function MjmlMarketingEmail(
                 lineHeight="30px"
                 color="#111827"
                 fontWeight="700"
-                margin="0 0 16px"
+                padding="0 0 16px"
               >
                 What this fixture covers
               </MjmlText>
-              {features.map((feature) => (
-                <MjmlSection
-                  key={feature.title}
-                  backgroundColor="#f9fafb"
-                  border="1px solid #e5e7eb"
-                  borderRadius="12px"
-                  padding="16px"
-                >
-                  <MjmlColumn>
-                    <MjmlText
-                      fontSize="16px"
-                      lineHeight="24px"
-                      color="#111827"
-                      fontWeight="700"
-                      margin="0 0 6px"
-                    >
-                      {feature.title}
-                    </MjmlText>
-                    <MjmlText
-                      fontSize="14px"
-                      lineHeight="22px"
-                      color="#4b5563"
-                      margin="0"
-                    >
-                      {feature.body}
-                    </MjmlText>
-                  </MjmlColumn>
-                </MjmlSection>
-              ))}
             </MjmlColumn>
           </MjmlSection>
+          {features.map((feature) => (
+            <MjmlSection
+              key={feature.title}
+              backgroundColor="#f9fafb"
+              border="1px solid #e5e7eb"
+              borderRadius="12px"
+              padding="16px"
+            >
+              <MjmlColumn>
+                <MjmlText
+                  fontSize="16px"
+                  lineHeight="24px"
+                  color="#111827"
+                  fontWeight="700"
+                  padding="0 0 6px"
+                >
+                  {feature.title}
+                </MjmlText>
+                <MjmlText
+                  fontSize="14px"
+                  lineHeight="22px"
+                  color="#4b5563"
+                  padding="0"
+                >
+                  {feature.body}
+                </MjmlText>
+              </MjmlColumn>
+            </MjmlSection>
+          ))}
 
           {/* Products */}
           <MjmlSection padding="8px 0">
@@ -145,7 +149,7 @@ export function MjmlMarketingEmail(
                 lineHeight="30px"
                 color="#111827"
                 fontWeight="700"
-                margin="0 0 16px"
+                padding="0 0 16px"
               >
                 Product highlights
               </MjmlText>
@@ -168,7 +172,7 @@ export function MjmlMarketingEmail(
                   color="#111827"
                   fontWeight="700"
                   align="center"
-                  margin="0"
+                  padding="0"
                 >
                   {product.title}
                 </MjmlText>
@@ -178,7 +182,7 @@ export function MjmlMarketingEmail(
                   color="#7c3aed"
                   fontWeight="700"
                   align="center"
-                  margin="4px 0 0"
+                  padding="4px 0 0"
                 >
                   {product.price}
                 </MjmlText>
@@ -194,7 +198,7 @@ export function MjmlMarketingEmail(
                 lineHeight="30px"
                 color="#111827"
                 fontWeight="700"
-                margin="0 0 16px"
+                padding="0 0 16px"
               >
                 Release notes
               </MjmlText>
@@ -209,9 +213,8 @@ export function MjmlMarketingEmail(
                   color="#6d28d9"
                   fontWeight="700"
                   backgroundColor="#ede9fe"
-                  borderRadius="999px"
                   align="center"
-                  margin="0"
+                  padding="0"
                 >
                   {update.title.split(' ')[2]}
                 </MjmlText>
@@ -222,7 +225,7 @@ export function MjmlMarketingEmail(
                   lineHeight="22px"
                   color="#111827"
                   fontWeight="700"
-                  margin="0 0 4px"
+                  padding="0 0 4px"
                 >
                   {update.title}
                 </MjmlText>
@@ -230,7 +233,7 @@ export function MjmlMarketingEmail(
                   fontSize="14px"
                   lineHeight="22px"
                   color="#4b5563"
-                  margin="0 0 12px"
+                  padding="0 0 12px"
                 >
                   {update.body}
                 </MjmlText>
@@ -238,7 +241,11 @@ export function MjmlMarketingEmail(
             </MjmlSection>
           ))}
 
-          <MjmlDivider borderColor="#e5e7eb" padding="28px 0" />
+          <MjmlSection padding="0">
+            <MjmlColumn>
+              <MjmlDivider borderColor="#e5e7eb" padding="28px 0" />
+            </MjmlColumn>
+          </MjmlSection>
 
           {/* Footer */}
           <MjmlSection>
@@ -248,7 +255,7 @@ export function MjmlMarketingEmail(
                 lineHeight="20px"
                 color="#6b7280"
                 align="center"
-                margin="0 0 8px"
+                padding="0 0 8px"
               >
                 {data.footerReason}
               </MjmlText>
@@ -257,7 +264,7 @@ export function MjmlMarketingEmail(
                 lineHeight="20px"
                 color="#6b7280"
                 align="center"
-                margin="0"
+                padding="0"
               >
                 {footerLinks.map(([label, href], index) => (
                   <span key={href}>

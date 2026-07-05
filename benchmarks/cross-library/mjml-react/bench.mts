@@ -87,7 +87,12 @@ function assertIncludes(label: string, output: string, values: string[]) {
 
 async function renderMjml(email: React.ReactElement): Promise<string> {
   const mjmlString = renderToMjml(email);
-  const { html } = await mjml(mjmlString, { validationLevel: 'soft' });
+  const { errors, html } = await mjml(mjmlString, { validationLevel: 'soft' });
+  if (errors.length > 0) {
+    throw new Error(
+      `MJML validation failed:\n${errors.map((error) => error.formattedMessage).join('\n')}`,
+    );
+  }
   return html;
 }
 

@@ -80,12 +80,10 @@ function main() {
     for (const b of libNames) {
       if (a === b) {
         pairwiseScores[a][b] = 100;
-      } else if (pairwiseScores[b]?.[a] !== undefined) {
-        pairwiseScores[a][b] = pairwiseScores[b][a];
       } else {
         pairwiseScores[a][b] = checkConformance(
-          htmlFiles[a],
-          htmlFiles[b],
+          htmlFiles[a] ?? '',
+          htmlFiles[b] ?? '',
         ).score;
       }
     }
@@ -96,7 +94,7 @@ function main() {
   for (const a of libNames) {
     const scores = libNames
       .filter((b) => b !== a)
-      .map((b) => pairwiseScores[a][b]);
+      .map((b) => pairwiseScores[a]?.[b] ?? 0);
     avgConformance[a] =
       scores.length > 0
         ? Math.round(scores.reduce((x, y) => x + y, 0) / scores.length)
@@ -105,6 +103,10 @@ function main() {
 
   // ---- Find baseline (react-email render) ----
   const baseline = all.find((r) => r.name === 'react-email render') ?? all[0];
+  if (!baseline) {
+    console.error('No benchmark baseline found.');
+    process.exit(1);
+  }
 
   // ---- Print table ----
   console.log('');
@@ -254,7 +256,7 @@ function main() {
     for (const a of libNames) {
       const cells = libNames.map((b) => {
         if (a === b) return '—'.padStart(colW);
-        return `${pairwiseScores[a][b]}%`.padStart(colW);
+        return `${pairwiseScores[a]?.[b] ?? 0}%`.padStart(colW);
       });
       console.log(a.padEnd(labelW) + cells.join(' '));
     }

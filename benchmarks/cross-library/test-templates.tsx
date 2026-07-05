@@ -1,5 +1,6 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource solid-js */
+
 import {
   Body,
   Button,
@@ -15,6 +16,7 @@ import {
   Section,
   Text,
 } from '@akin01/solid-email';
+import { For } from 'solid-js';
 
 function makeProps(name: string) {
   return {
@@ -142,99 +144,103 @@ export function LargeTemplate() {
             <Heading as="h2" style={{ fontSize: 22 }}>
               What this fixture covers
             </Heading>
-            {features.map((f) => (
-              <Section
-                key={f.title}
-                style={{
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 12,
-                  marginBottom: 12,
-                  padding: 16,
-                }}
-              >
-                <Heading as="h3" style={{ fontSize: 16 }}>
-                  {f.title}
-                </Heading>
-                <Text style={{ color: '#4b5563', fontSize: 14 }}>{f.body}</Text>
-              </Section>
-            ))}
+            <For each={features}>
+              {(f) => (
+                <Section
+                  style={{
+                    backgroundColor: '#f9fafb',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 12,
+                    marginBottom: 12,
+                    padding: 16,
+                  }}
+                >
+                  <Heading as="h3" style={{ fontSize: 16 }}>
+                    {f.title}
+                  </Heading>
+                  <Text style={{ color: '#4b5563', fontSize: 14 }}>
+                    {f.body}
+                  </Text>
+                </Section>
+              )}
+            </For>
           </Section>
           <Section style={{ padding: '8px 0' }}>
             <Heading as="h2" style={{ fontSize: 22 }}>
               Product highlights
             </Heading>
             <Row>
-              {products.map((prod) => (
-                <Column
-                  key={prod.title}
-                  style={{ padding: 12, width: '33.333%' }}
-                >
-                  <Img
-                    alt={prod.title}
-                    height="72"
-                    src={prod.image}
-                    style={{
-                      borderRadius: 14,
-                      display: 'block',
-                      margin: '0 auto 10px',
-                    }}
-                    width="72"
-                  />
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      textAlign: 'center' as const,
-                    }}
-                  >
-                    {prod.title}
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#7c3aed',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      textAlign: 'center' as const,
-                    }}
-                  >
-                    {prod.price}
-                  </Text>
-                </Column>
-              ))}
+              <For each={products}>
+                {(prod) => (
+                  <Column style={{ padding: 12, width: '33.333%' }}>
+                    <Img
+                      alt={prod.title}
+                      height="72"
+                      src={prod.image}
+                      style={{
+                        borderRadius: 14,
+                        display: 'block',
+                        margin: '0 auto 10px',
+                      }}
+                      width="72"
+                    />
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 700,
+                        textAlign: 'center' as const,
+                      }}
+                    >
+                      {prod.title}
+                    </Text>
+                    <Text
+                      style={{
+                        color: '#7c3aed',
+                        fontSize: 13,
+                        fontWeight: 700,
+                        textAlign: 'center' as const,
+                      }}
+                    >
+                      {prod.price}
+                    </Text>
+                  </Column>
+                )}
+              </For>
             </Row>
           </Section>
           <Section>
             <Heading as="h2" style={{ fontSize: 22 }}>
               Release notes
             </Heading>
-            {updates.map((u) => (
-              <Row key={u.title}>
-                <Column style={{ width: 44 }}>
-                  <Text
-                    style={{
-                      backgroundColor: '#ede9fe',
-                      borderRadius: 999,
-                      color: '#6d28d9',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      textAlign: 'center' as const,
-                      width: 28,
-                    }}
-                  >
-                    {u.title.split(' ')[1]}
-                  </Text>
-                </Column>
-                <Column>
-                  <Text style={{ fontSize: 14, fontWeight: 700 }}>
-                    {u.title}
-                  </Text>
-                  <Text style={{ color: '#4b5563', fontSize: 14 }}>
-                    {u.body}
-                  </Text>
-                </Column>
-              </Row>
-            ))}
+            <For each={updates}>
+              {(u) => (
+                <Row>
+                  <Column style={{ width: 44 }}>
+                    <Text
+                      style={{
+                        backgroundColor: '#ede9fe',
+                        borderRadius: 999,
+                        color: '#6d28d9',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        textAlign: 'center' as const,
+                        width: 28,
+                      }}
+                    >
+                      {u.title.split(' ')[1]}
+                    </Text>
+                  </Column>
+                  <Column>
+                    <Text style={{ fontSize: 14, fontWeight: 700 }}>
+                      {u.title}
+                    </Text>
+                    <Text style={{ color: '#4b5563', fontSize: 14 }}>
+                      {u.body}
+                    </Text>
+                  </Column>
+                </Row>
+              )}
+            </For>
           </Section>
           <Hr style={{ borderColor: '#e5e7eb', margin: '28px 0' }} />
           <Section style={{ textAlign: 'center' as const }}>

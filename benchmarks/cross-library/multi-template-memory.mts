@@ -5,11 +5,7 @@
  * compile cache scales. Answers: "will many templates blow up memory?"
  */
 import { performance } from 'node:perf_hooks';
-import {
-  type CompiledTemplate,
-  compileSync,
-  type Renderable,
-} from '@akin01/solid-email';
+import { type CompiledTemplate, compileSync } from '@akin01/solid-email';
 import { takeSnapshot, toMB } from './shared/memory';
 import {
   getProps,
@@ -53,7 +49,7 @@ function main() {
       const startCompile = performance.now();
       const compiled: CompiledTemplate[] = [];
       for (let i = 0; i < count; i++) {
-        compiled.push(compileSync(() => template.create() as Renderable));
+        compiled.push(compileSync(() => template.create()));
       }
       const compileTimeMs = performance.now() - startCompile;
 

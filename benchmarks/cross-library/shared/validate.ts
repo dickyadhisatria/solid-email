@@ -101,11 +101,10 @@ function extractLinks(html: string): { text: string; href: string }[] {
   const linkRegex = /<a\s[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
   let match: RegExpExecArray | null = linkRegex.exec(html);
   while (match !== null) {
-    const href = match[1];
+    const href = match[1] ?? '';
+    const rawText = match[2] ?? '';
     // Strip tags, decode entities, normalize invisible chars
-    const text = normalizeText(
-      decodeEntities(match[2].replace(/<[^>]+>/g, '')),
-    );
+    const text = normalizeText(decodeEntities(rawText.replace(/<[^>]+>/g, '')));
     if (text.length > 0) {
       links.push({ text, href });
     }
@@ -122,9 +121,9 @@ function extractImages(html: string): { src: string; alt: string }[] {
   const imgRegex = /<img\s[^>]*src=["']([^"']+)["'][^>]*>/gi;
   let match: RegExpExecArray | null = imgRegex.exec(html);
   while (match !== null) {
-    const src = match[1];
+    const src = match[1] ?? '';
     const altMatch = match[0].match(/alt=["']([^"']*)["']/i);
-    const alt = altMatch ? altMatch[1] : '';
+    const alt = altMatch?.[1] ?? '';
     images.push({ src, alt });
     match = imgRegex.exec(html);
   }

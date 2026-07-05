@@ -19,6 +19,7 @@ import {
   slot,
   Text,
 } from '@akin01/solid-email';
+import { For } from 'solid-js';
 import {
   features,
   footerLinks,
@@ -30,9 +31,7 @@ export function CompiledMarketingEmail() {
   return (
     <Html lang="en">
       <Head />
-      <Preview>
-        <Slot name="preview" />
-      </Preview>
+      <Preview>{slot('preview')}</Preview>
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.hero}>
@@ -53,14 +52,16 @@ export function CompiledMarketingEmail() {
             <Heading as="h2" style={styles.sectionHeading}>
               What this fixture covers
             </Heading>
-            {features.map((feature) => (
-              <Section key={feature.title} style={styles.card}>
-                <Heading as="h3" style={styles.cardTitle}>
-                  {feature.title}
-                </Heading>
-                <Text style={styles.copy}>{feature.body}</Text>
-              </Section>
-            ))}
+            <For each={features}>
+              {(feature) => (
+                <Section style={styles.card}>
+                  <Heading as="h3" style={styles.cardTitle}>
+                    {feature.title}
+                  </Heading>
+                  <Text style={styles.copy}>{feature.body}</Text>
+                </Section>
+              )}
+            </For>
           </Section>
 
           <Section style={styles.productSection}>
@@ -68,19 +69,21 @@ export function CompiledMarketingEmail() {
               Product highlights
             </Heading>
             <Row>
-              {products.map((product) => (
-                <Column key={product.title} style={styles.productColumn}>
-                  <Img
-                    alt={`${product.title} icon`}
-                    height="72"
-                    src={product.image}
-                    style={styles.productImage}
-                    width="72"
-                  />
-                  <Text style={styles.productTitle}>{product.title}</Text>
-                  <Text style={styles.productPrice}>{product.price}</Text>
-                </Column>
-              ))}
+              <For each={products}>
+                {(product) => (
+                  <Column style={styles.productColumn}>
+                    <Img
+                      alt={`${product.title} icon`}
+                      height="72"
+                      src={product.image}
+                      style={styles.productImage}
+                      width="72"
+                    />
+                    <Text style={styles.productTitle}>{product.title}</Text>
+                    <Text style={styles.productPrice}>{product.price}</Text>
+                  </Column>
+                )}
+              </For>
             </Row>
           </Section>
 
@@ -88,19 +91,21 @@ export function CompiledMarketingEmail() {
             <Heading as="h2" style={styles.sectionHeading}>
               Release notes
             </Heading>
-            {updates.map((update) => (
-              <Row key={update.title}>
-                <Column style={styles.updateIndexColumn}>
-                  <Text style={styles.updateIndex}>
-                    {update.title.split(' ')[2]}
-                  </Text>
-                </Column>
-                <Column>
-                  <Text style={styles.updateTitle}>{update.title}</Text>
-                  <Text style={styles.copy}>{update.body}</Text>
-                </Column>
-              </Row>
-            ))}
+            <For each={updates}>
+              {(update) => (
+                <Row>
+                  <Column style={styles.updateIndexColumn}>
+                    <Text style={styles.updateIndex}>
+                      {update.title.split(' ')[2]}
+                    </Text>
+                  </Column>
+                  <Column>
+                    <Text style={styles.updateTitle}>{update.title}</Text>
+                    <Text style={styles.copy}>{update.body}</Text>
+                  </Column>
+                </Row>
+              )}
+            </For>
           </Section>
 
           <Hr style={styles.rule} />
@@ -110,14 +115,16 @@ export function CompiledMarketingEmail() {
               <Slot name="footerReason" />
             </Text>
             <Text style={styles.footerText}>
-              {footerLinks.map(([label, href], index) => (
-                <span key={href}>
-                  {index > 0 ? ' · ' : ''}
-                  <Link href={href} style={styles.footerLink}>
-                    {label}
-                  </Link>
-                </span>
-              ))}
+              <For each={footerLinks}>
+                {([label, href], index) => (
+                  <span>
+                    {index() > 0 ? ' · ' : ''}
+                    <Link href={href} style={styles.footerLink}>
+                      {label}
+                    </Link>
+                  </span>
+                )}
+              </For>
             </Text>
           </Section>
         </Container>
