@@ -17,11 +17,14 @@ Use `render()` by default. It supports async Solid rendering and Suspense waitin
 
 ## DOM/CSR preview mounting
 
-Use the DOM-safe client subpath only for browser previews that mount components into a real DOM. It intentionally excludes `render`, `compile`, and `Tailwind`.
+Use the `@akin01/solid-email` package root for browser previews that mount
+components into a real DOM. Browser-condition bundlers resolve the root to the
+DOM-safe Solid DOM build, which intentionally excludes `render`, `compile`, and
+`Tailwind`.
 
 ```tsx
 import { render as mount } from 'solid-js/web';
-import { Body, Container, Heading, Html, Text } from '@akin01/solid-email/client';
+import { Body, Container, Heading, Html, Text } from '@akin01/solid-email';
 
 mount(
   () => (
@@ -38,7 +41,8 @@ mount(
 );
 ```
 
-Keep email HTML generation on the server with `@solid-email/render` or the `@akin01/solid-email` package root. The client subpath is for mounted previews, not send-ready HTML strings.
+Keep send-ready email HTML generation on the server with `@solid-email/render`
+or default/server imports from the `@akin01/solid-email` package root.
 
 ## Pretty HTML
 
