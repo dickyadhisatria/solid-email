@@ -1,4 +1,4 @@
-import type { Raw, Value } from 'css-tree';
+import type { Raw, Value } from 'css-tree/dist/csstree.esm';
 
 export function unwrapValue(value: Value | Raw) {
   if (value.type === 'Value' && value.children.size === 1) {

@@ -1,7 +1,9 @@
-import type { ExecFileException } from 'node:child_process';
-import { execFile } from 'node:child_process';
+import type { ChildProcess, ExecFileException } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { mkdir, readFile, rm } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import path from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -140,40 +142,46 @@ const renderRequireProbe = `${renderExportSmoke}
   process.exit(1);
 });`;
 
+// These probes use dynamic import because the tests intentionally exercise
+// package export resolution under Node's condition flags.
 const solidEmailBrowserImportProbe = `
 const resolved = import.meta.resolve('@akin01/solid-email');
 const mod = await import('@akin01/solid-email');
 
-for (const name of ['render', 'Section', 'Row', 'Heading']) {
+for (const name of ['Body', 'Button', 'Container', 'Heading', 'Preview', 'Row', 'Section', 'Text']) {
   if (typeof mod[name] !== 'function') {
-    throw new Error(\`missing solid-email export: \${name}\`);
+    throw new Error(\`missing browser root export: \${name}\`);
   }
 }
 
-const html = await mod.render(() =>
-  mod.Section({
-    style: { padding: '12px' },
-    children: mod.Row({
-      children: mod.Heading({
-        as: 'h2',
-        style: { color: 'blue' },
-        children: 'Solid Email browser condition smoke',
-      }),
-    }),
-  }),
-);
-
-if (!html.includes('<h2') || !html.includes('Solid Email browser condition smoke')) {
-  throw new Error(\`missing rendered heading: \${html}\`);
-}
-if (!html.includes('style="width:100%"') || !html.includes('color:blue')) {
-  throw new Error(\`missing server-rendered style output: \${html}\`);
+for (const name of ['render', 'renderSync', 'compile', 'compileSync', 'toPlainText', 'pretty', 'Tailwind']) {
+  if (name in mod) {
+    throw new Error(\`unexpected server-only browser root export: \${name}\`);
+  }
 }
 
 process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
 
-const solidEmailClientDomProbe = `
-const resolved = import.meta.resolve('@akin01/solid-email/client');
+const solidEmailBrowserRequireProbe = `
+const resolved = require.resolve('@akin01/solid-email');
+const mod = require('@akin01/solid-email');
+
+for (const name of ['Body', 'Button', 'Container', 'Heading', 'Preview', 'Row', 'Section', 'Text']) {
+  if (typeof mod[name] !== 'function') {
+    throw new Error(\`missing browser root require export: \${name}\`);
+  }
+}
+
+for (const name of ['render', 'renderSync', 'compile', 'compileSync', 'toPlainText', 'pretty', 'Tailwind']) {
+  if (name in mod) {
+    throw new Error(\`unexpected server-only browser root require export: \${name}\`);
+  }
+}
+
+process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
+
+const solidEmailBrowserRootDomProbe = `
+const resolved = import.meta.resolve('@akin01/solid-email');
 const { JSDOM } = await import('jsdom');
 const dom = new JSDOM('<!DOCTYPE html><main id="root"></main>', {
   url: 'https://solid.email/preview',
@@ -184,16 +192,16 @@ globalThis.Node = dom.window.Node;
 globalThis.HTMLElement = dom.window.HTMLElement;
 globalThis.Element = dom.window.Element;
 
-const mod = await import('@akin01/solid-email/client');
+const mod = await import('@akin01/solid-email');
 
 for (const name of ['render', 'compile', 'Tailwind']) {
   if (name in mod) {
-    throw new Error(\`unexpected client export: \${name}\`);
+    throw new Error(\`unexpected browser root export: \${name}\`);
   }
 }
 for (const name of ['Container', 'Heading', 'Text', 'Preview']) {
   if (typeof mod[name] !== 'function') {
-    throw new Error(\`missing client export: \${name}\`);
+    throw new Error(\`missing browser root export: \${name}\`);
   }
 }
 
@@ -206,15 +214,15 @@ const dispose = mount(
       children: mod.Heading({
         as: 'h2',
         style: { color: 'purple' },
-        children: mod.Text({ children: 'Client preview mounted' }),
+        children: mod.Text({ children: 'Browser root preview mounted' }),
       }),
     }),
   root,
 );
 
 const heading = root.querySelector('h2');
-if (!heading || heading.textContent !== 'Client preview mounted') {
-  throw new Error(\`missing mounted client heading: \${root.innerHTML}\`);
+if (!heading || heading.textContent !== 'Browser root preview mounted') {
+  throw new Error(\`missing mounted browser root heading: \${root.innerHTML}\`);
 }
 if (!root.querySelector('table')) {
   throw new Error(\`missing mounted email layout table: \${root.innerHTML}\`);
@@ -222,6 +230,52 @@ if (!root.querySelector('table')) {
 
 dispose();
 process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
+
+const solidEmailServerRootSmoke = `
+async function assertSolidEmailServerRoot(mod, expectedText) {
+  for (const name of ['render', 'Tailwind', 'Text']) {
+    if (typeof mod[name] !== 'function') {
+      throw new Error(\`missing server root export: \${name}\`);
+    }
+  }
+
+  const html = await mod.render(() =>
+    mod.Tailwind({
+      children: mod.Text({
+        class: 'text-blue-600',
+        children: expectedText,
+      }),
+    }),
+  );
+
+  if (!html.includes(expectedText)) {
+    throw new Error(\`missing rendered Tailwind text: \${html}\`);
+  }
+  if (html.includes('text-blue-600')) {
+    throw new Error(\`Tailwind class was not removed: \${html}\`);
+  }
+  if (!html.includes('color:rgb(21,93,252)')) {
+    throw new Error(\`Tailwind class was not inlined: \${html}\`);
+  }
+}
+`;
+
+const solidEmailServerImportProbe = `${solidEmailServerRootSmoke}
+const resolved = import.meta.resolve('@akin01/solid-email');
+const mod = await import('@akin01/solid-email');
+await assertSolidEmailServerRoot(mod, 'Solid Email ESM Tailwind safe');
+process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));`;
+
+const solidEmailServerRequireProbe = `${solidEmailServerRootSmoke}
+(async () => {
+  const resolved = require.resolve('@akin01/solid-email');
+  const mod = require('@akin01/solid-email');
+  await assertSolidEmailServerRoot(mod, 'Solid Email CJS Tailwind safe');
+  process.stdout.write(resolved.replaceAll('\\\\', '/') + '\\n', () => process.exit(0));
+})().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});`;
 
 type PnpmError = ExecFileException & {
   stderr?: string;
@@ -232,7 +286,15 @@ function isPnpmError(error: unknown): error is PnpmError {
   return error instanceof Error;
 }
 
-async function cleanFixture(fixture: 'vite' | 'tanstack-start'): Promise<void> {
+type FixtureName = 'vite' | 'tanstack-start' | 'cloudflare-tanstack-start';
+
+type PreviewServer = {
+  output: () => string;
+  process: ChildProcess;
+  stop: () => Promise<void>;
+};
+
+async function cleanFixture(fixture: FixtureName): Promise<void> {
   const fixtureRoot = path.join(e2eRoot, fixture);
   await rm(path.join(fixtureRoot, 'node_modules'), {
     recursive: true,
@@ -243,6 +305,10 @@ async function cleanFixture(fixture: 'vite' | 'tanstack-start'): Promise<void> {
   await rm(path.join(fixtureRoot, '.render'), { recursive: true, force: true });
   await rm(path.join(fixtureRoot, '.output'), { recursive: true, force: true });
   await rm(path.join(fixtureRoot, '.tanstack'), {
+    recursive: true,
+    force: true,
+  });
+  await rm(path.join(fixtureRoot, '.wrangler'), {
     recursive: true,
     force: true,
   });
@@ -299,7 +365,7 @@ async function preparePackedPackages(): Promise<void> {
   ]);
 }
 
-async function installAndBuildFixture(fixture: 'vite' | 'tanstack-start') {
+async function installAndBuildFixture(fixture: FixtureName) {
   const fixtureRoot = path.join(e2eRoot, fixture);
   await cleanFixture(fixture);
 
@@ -320,6 +386,85 @@ async function installAndBuildFixture(fixture: 'vite' | 'tanstack-start') {
     fixtureRoot,
   );
   return fixtureRoot;
+}
+
+async function getAvailablePort(): Promise<number> {
+  const server = createServer();
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => resolve());
+  });
+  const address = server.address();
+  await new Promise<void>((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
+  });
+
+  if (typeof address === 'object' && address !== null) {
+    return address.port;
+  }
+
+  throw new Error('Unable to allocate a preview port');
+}
+
+function startFixturePreview(fixtureRoot: string, port: number): PreviewServer {
+  const child = spawn(
+    'pnpm',
+    ['run', 'preview', '--port', String(port), '--strictPort'],
+    {
+      cwd: fixtureRoot,
+      env: { ...process.env, CI: '1' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    },
+  );
+  let output = '';
+  child.stdout?.on('data', (chunk) => {
+    output += chunk.toString();
+  });
+  child.stderr?.on('data', (chunk) => {
+    output += chunk.toString();
+  });
+
+  return {
+    output: () => output,
+    process: child,
+    stop: async () => {
+      if (child.exitCode !== null) {
+        return;
+      }
+
+      child.kill('SIGTERM');
+      await new Promise<void>((resolve) => {
+        child.once('exit', () => resolve());
+      });
+    },
+  };
+}
+
+async function fetchWhenReady(
+  url: string,
+  server: PreviewServer,
+): Promise<Response> {
+  const deadline = Date.now() + 60_000;
+  let lastError: unknown;
+
+  while (Date.now() < deadline) {
+    if (server.process.exitCode !== null) {
+      throw new Error(
+        `Preview exited before serving ${url}.\n${server.output()}`,
+      );
+    }
+
+    try {
+      return await fetch(url);
+    } catch (error) {
+      lastError = error;
+      await delay(250);
+    }
+  }
+
+  throw new Error(
+    `Timed out waiting for ${url}: ${String(lastError)}\n${server.output()}`,
+  );
 }
 
 async function resolveRenderImport(entry: RenderExportCase): Promise<string> {
@@ -348,7 +493,7 @@ function expectAllComponentsHtml(html: string, label: string): void {
   expect(html).toContain('padding:1rem');
   expect(html).toContain('font-size:0.875rem');
   expect(html).toContain('color:rgb(21,93,252)');
-  expect(html).not.toContain('class="mx-auto bg-white p-4"');
+  expect(html).not.toContain('mx-auto bg-white p-4');
   expect(html).toContain('<html lang="en" dir="ltr"');
   expect(html).toContain('<body');
   expect(html).toContain('@font-face');
@@ -385,7 +530,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await Promise.all([cleanFixture('vite'), cleanFixture('tanstack-start')]);
+  await Promise.all([
+    cleanFixture('vite'),
+    cleanFixture('tanstack-start'),
+    cleanFixture('cloudflare-tanstack-start'),
+  ]);
   await rm(path.join(e2eRoot, '.tmp'), { recursive: true, force: true });
 });
 
@@ -401,7 +550,27 @@ describe('published package integration fixtures', () => {
     }
   });
 
-  it('loads solid-email under browser import conditions', async () => {
+  it('loads solid-email root server entry in ESM and CJS', async () => {
+    const esm = await execFileAsync(
+      'node',
+      ['--input-type=module', '--eval', solidEmailServerImportProbe],
+      { cwd: root },
+    );
+    const cjs = await execFileAsync(
+      'node',
+      ['--eval', solidEmailServerRequireProbe],
+      { cwd: root },
+    );
+
+    expect(esm.stdout.trim().replaceAll('\\', '/')).toContain(
+      '/packages/solid-email/dist/index.mjs',
+    );
+    expect(cjs.stdout.trim().replaceAll('\\', '/')).toContain(
+      '/packages/solid-email/dist/index.cjs',
+    );
+  });
+
+  it('loads solid-email root under browser import conditions', async () => {
     const { stdout } = await execFileAsync(
       'node',
       [
@@ -414,18 +583,30 @@ describe('published package integration fixtures', () => {
     );
 
     expect(stdout.trim().replaceAll('\\', '/')).toContain(
-      '/packages/solid-email/dist/index.mjs',
+      '/packages/solid-email/dist/client/index.mjs',
     );
   });
 
-  it('mounts the client entrypoint in a Solid DOM preview', async () => {
+  it('requires solid-email root under browser conditions', async () => {
+    const { stdout } = await execFileAsync(
+      'node',
+      ['--conditions=browser', '--eval', solidEmailBrowserRequireProbe],
+      { cwd: root },
+    );
+
+    expect(stdout.trim().replaceAll('\\', '/')).toContain(
+      '/packages/solid-email/dist/client/index.cjs',
+    );
+  });
+
+  it('mounts the browser root condition in a Solid DOM preview', async () => {
     const { stdout } = await execFileAsync(
       'node',
       [
         '--conditions=browser',
         '--input-type=module',
         '--eval',
-        solidEmailClientDomProbe,
+        solidEmailBrowserRootDomProbe,
       ],
       { cwd: root },
     );
@@ -434,6 +615,7 @@ describe('published package integration fixtures', () => {
       '/packages/solid-email/dist/client/index.mjs',
     );
   });
+
   it('builds and renders in a Solid Vite SSR fixture', async () => {
     const fixtureRoot = await installAndBuildFixture('vite');
     const html = await execFileAsync('node', ['dist/entry-server.mjs'], {
@@ -471,5 +653,47 @@ describe('published package integration fixtures', () => {
       'utf8',
     );
     expect(componentTypes).toContain('AllComponentsEmail');
+  });
+
+  it('renders solid-email through a Cloudflare TanStack Start Worker route', async () => {
+    const fixtureRoot = await installAndBuildFixture(
+      'cloudflare-tanstack-start',
+    );
+    const routeTree = await readFile(
+      path.join(fixtureRoot, 'src/routeTree.gen.ts'),
+      'utf8',
+    );
+    expect(routeTree).toContain('/');
+
+    const port = await getAvailablePort();
+    const preview = startFixturePreview(fixtureRoot, port);
+
+    try {
+      const response = await fetchWhenReady(
+        `http://127.0.0.1:${port}/`,
+        preview,
+      );
+      const html = await response.text();
+      const decodedHtml = html
+        .replaceAll('&quot;', '"')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&amp;', '&');
+
+      expect(response.status, html).toBe(200);
+      expect(html).toContain('data-email-status="rendered"');
+      expect(html).toContain('Cloudflare TanStack Start Solid route loaded');
+      expectAllComponentsHtml(
+        decodedHtml,
+        'Cloudflare TanStack Solid email rendered',
+      );
+      expect(html).toContain('Cloudflare TanStack Solid email rendered');
+      expect(html).toContain('Hello Cloudflare TanStack Worker!');
+      expect(html).toContain('Solid Start route graph');
+      expect(html).toContain('href="https://example.com/action"');
+      expect(html).toContain('@solid-email/render in Workerd');
+    } finally {
+      await preview.stop();
+    }
   });
 });

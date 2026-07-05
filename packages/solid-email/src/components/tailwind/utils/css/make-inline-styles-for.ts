@@ -1,4 +1,9 @@
-import { type CssNode, type Declaration, generate, walk } from 'css-tree';
+import {
+  type CssNode,
+  type Declaration,
+  generate,
+  walk,
+} from 'css-tree/dist/csstree.esm';
 import { getStyleProperty } from '../compatibility/get-style-property';
 import type { CustomProperties } from './get-custom-properties';
 import { stripEmptyTailwindVars } from './strip-empty-tailwind-vars';

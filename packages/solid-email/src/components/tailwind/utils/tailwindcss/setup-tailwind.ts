@@ -1,4 +1,4 @@
-import { parse, type StyleSheet } from 'css-tree';
+import { parse, type StyleSheet } from 'css-tree/dist/csstree.esm';
 import { compile } from 'tailwindcss';
 import type { TailwindConfig } from '../../tailwind';
 import indexCss from './tailwind-stylesheets/index';
@@ -15,6 +15,8 @@ interface TailwindCompiler {
   build(candidates: string[]): string;
 }
 
+const virtualTailwindBase = 'solid-email://tailwind/';
+
 async function compileTailwind(
   baseCss: string,
   config: TailwindConfig | undefined,
@@ -24,8 +26,8 @@ async function compileTailwind(
     async loadModule(id, base, resourceHint) {
       if (resourceHint === 'config') {
         return {
-          path: id,
-          base: base,
+          path: id ?? 'solid-email-tailwind.config.js',
+          base: base ?? virtualTailwindBase,
           module: config ?? {},
         };
       }
@@ -36,9 +38,11 @@ async function compileTailwind(
     },
     polyfills: 0, // All
     async loadStylesheet(id, base) {
+      const stylesheetBase = base ?? virtualTailwindBase;
+
       if (id === 'tailwindcss') {
         return {
-          base,
+          base: stylesheetBase,
           path: 'tailwindcss/index.css',
           content: indexCss,
         };
@@ -46,7 +50,7 @@ async function compileTailwind(
 
       if (id === 'tailwindcss/preflight.css') {
         return {
-          base,
+          base: stylesheetBase,
           path: id,
           content: preflightCss,
         };
@@ -54,7 +58,7 @@ async function compileTailwind(
 
       if (id === 'tailwindcss/theme.css') {
         return {
-          base,
+          base: stylesheetBase,
           path: id,
           content: themeCss,
         };
@@ -62,7 +66,7 @@ async function compileTailwind(
 
       if (id === 'tailwindcss/utilities.css') {
         return {
-          base,
+          base: stylesheetBase,
           path: id,
           content: utilitiesCss,
         };
@@ -70,7 +74,7 @@ async function compileTailwind(
 
       if (id === 'custom-theme.css') {
         return {
-          base,
+          base: stylesheetBase,
           path: id,
           content: cssConfigs?.theme ?? '',
         };
@@ -78,7 +82,7 @@ async function compileTailwind(
 
       if (id === 'custom-utilities.css') {
         return {
-          base,
+          base: stylesheetBase,
           path: id,
           content: cssConfigs?.utility ?? '',
         };

@@ -18,10 +18,11 @@ const base: Pick<UserConfig, 'deps' | 'dts' | 'fixedExtension' | 'format'> = {
 export default defineConfig([
   {
     ...base,
-    // Package root stays SSR/email-rendering oriented so render(), compile(),
-    // and every email component are safe under browser-like import conditions.
+    // Package root stays SSR/email-rendering oriented. Workerd/Worker package
+    // conditions point at this same ESM build instead of a second server bundle.
     entry: ['./src/index.ts'],
     outDir: './dist',
+    platform: 'browser',
     plugins: [
       solid({
         solid: {
@@ -34,9 +35,9 @@ export default defineConfig([
   },
   {
     ...base,
-    // Explicit ./client subpath is a DOM/CSR build for previews. It excludes
-    // render/compile and server-only components instead of using browser
-    // conditions, because browser users may still render email HTML strings.
+    // Browser condition uses this DOM/CSR build for previews. It excludes
+    // render/compile and Tailwind while keeping the public import specifier at
+    // the package root.
     entry: ['./src/client/index.ts'],
     outDir: './dist/client',
     platform: 'browser',
