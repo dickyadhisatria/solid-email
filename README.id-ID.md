@@ -36,9 +36,9 @@ Diukur menggunakan `pnpm benchmark:rendering` pada fixture marketing email di re
 | Solid Email `render()` | Static JSX | 2.2919ms | 436.33 hz | 5,02x lebih cepat dari React Email `render()` |
 | Solid Email `renderSync()` | Static JSX | 1.8935ms | 528.13 hz | 6,08x lebih cepat dari React Email `render()` |
 | Solid Email `render()` | Tailwind JSX | 3.1230ms | 320.20 hz | 5,69x lebih cepat dari React Email Tailwind |
-| Solid Email `compileSync` render (cached) | Static JSX | **0.0438ms** | **22,842 hz** | 263x lebih cepat dari React Email `render()` |
-| Solid Email `compile` render (cached) | Static JSX | 0.0858ms | 11,661 hz | 134x lebih cepat dari React Email `render()` |
-| Solid Email `compile` render (cached) | Tailwind JSX | 0.0452ms | 22,145 hz | **393x lebih cepat dari React Email Tailwind** |
+| Solid Email `compileSync()` render (cached) | Static JSX | **0.0438ms** | **22,842 hz** | 263x lebih cepat dari React Email `render()` |
+ | Solid Email `compile()` render (cached) | Static JSX | 0.0858ms | 11,661 hz | 134x lebih cepat dari React Email `render()` |
+ | Solid Email `compile()` render (cached) | Tailwind JSX | 0.0452ms | 22,145 hz | **393x lebih cepat dari React Email Tailwind** |
 | React Email `render()` | Static JSX | 11.5084ms | 86.89 hz | Baseline |
 | React Email `render()` | Tailwind JSX | 17.7760ms | 56.26 hz | Baseline Tailwind |
 
@@ -99,8 +99,8 @@ export function WelcomeEmail() {
     <Html>
       <Body>
         <Container>
-          <Text>Welcome to Solid Email.</Text>
-          <Button href="https://example.com">Get started</Button>
+           <Text>Selamat datang di Solid Email.</Text>
+           <Button href="https://example.com">Mulai</Button>
         </Container>
       </Body>
     </Html>
@@ -150,9 +150,9 @@ function WelcomeEmail() {
       <Body>
         <Container>
           <Text>
-            Hello <Slot name="name" />!
+            Halo <Slot name="name" />!
           </Text>
-          <a href={slot('url')}>Visit</a>
+          <a href={slot('url')}>Kunjungi</a>
         </Container>
       </Body>
     </Html>
@@ -180,9 +180,9 @@ const compiled = await compile(
     <Body>
       <Container>
         <Text>
-          Hello <Slot name="name" />!
+          Halo <Slot name="name" />!
         </Text>
-        <Button href={slot('url')}>Open dashboard</Button>
+        <Button href={slot('url')}>Buka dashboard</Button>
       </Container>
     </Body>
   </Html>,
@@ -206,8 +206,8 @@ const text = await render(
     <Html>
       <Body>
         <Container>
-          <Text>Hello Alice</Text>
-          <Button href="https://example.com/dashboard">Open dashboard</Button>
+          <Text>Halo Alice</Text>
+          <Button href="https://example.com/dashboard">Buka dashboard</Button>
         </Container>
       </Body>
     </Html>
@@ -242,7 +242,7 @@ import { compile, Slot, slot } from '@solid-email/render';
 
 const compiled = await compile(
   <p>
-    Hello <Slot name="name" />!
+    Halo <Slot name="name" />!
   </p>
 );
 
@@ -266,8 +266,8 @@ const slots = defineSlots<MySlots>();
 
 const compiled = await compile<MySlots>(
   <p>
-    Hello {slots.content('name')}!
-    <a href={slots.attr('url')}>Visit</a>
+    Halo {slots.content('name')}!
+    <a href={slots.attr('url')}>Kunjungi</a>
   </p>,
 );
 
@@ -295,7 +295,7 @@ function Button(props: { href: string; children: JSX.Element }) {
 function WelcomeEmail(props: { name: JSX.Element; actionUrl: string }) {
   return (
     <p>
-      Hello {props.name}! <Button href={props.actionUrl}>Open dashboard</Button>
+      Halo {props.name}! <Button href={props.actionUrl}>Buka dashboard</Button>
     </p>
   );
 }
